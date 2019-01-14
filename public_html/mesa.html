@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="Content-Type" content="text/html" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<script src="three.min-r92.js"></script>
+	<script src="OrbitControls.js"></script>
+	<style>
+		* {
+			font-size:0px;
+		}
+		body, html {
+			padding:0;
+			margin:0;
+			border:0;
+		}
+		canvas {
+			width:100% !important;
+			height:100% !important;
+		}
+		.divGavetas {
+			position: absolute;
+			left: 50%;
+			top: 10px;
+			transform: translateX(-50%);
+			
+		}
+		.divGavetas button {
+			font-size: 18px;
+			margin-left: 15px;
+		}
+	</style>
+</head>
+<body onload="iniciar();">
+
+	<div class="divGavetas">
+		<button onclick="aberta_g1 = !aberta_g1;">Gaveta 1</button>
+		<button onclick="aberta_g2 = !aberta_g2;">Gaveta 2</button>
+		<button onclick="aberta_g3 = !aberta_g3;">Gaveta 3</button>
+	</div>
+
+	<script type="text/javascript">
+		function get(id) {
+			return document.getElementById(id);
+		}
+		function iniciar() {
+			var scene = new THREE.Scene();
+			var WIDTH = window.innerWidth;
+			var HEIGHT = window.innerHeight;
+			
+			var camera = new THREE.PerspectiveCamera(45, WIDTH/HEIGHT, 1, 1200);
+			camera.position.x = 2.0;
+			camera.position.y = 4.08;
+			camera.position.z = 7.17;
+			
+			var renderer = new THREE.WebGLRenderer({antilias:true});			
+			renderer.setSize(WIDTH, HEIGHT);
+			document.body.appendChild(renderer.domElement);
+			renderer.setClearColor(0xFFFFFF);			
+			renderer.render(scene, camera);
+						
+			var controls = new THREE.OrbitControls(camera, renderer.domElement);
+			
+			var loader = new THREE.JSONLoader();
+			loader.load('base.json', function (g, m) {
+				var obj = new THREE.Mesh(g, m);
+				scene.add(obj);
+			});
+			loader.load('gaveta1.json', function (g, m) {
+				gaveta1 = new THREE.Mesh(g, m);
+				scene.add(gaveta1);
+			});
+			loader.load('gaveta2.json', function (g, m) {
+				gaveta2 = new THREE.Mesh(g, m);
+				scene.add(gaveta2);
+			});
+			loader.load('gaveta3.json', function (g, m) {
+				gaveta3 = new THREE.Mesh(g, m);
+				scene.add(gaveta3);
+			});
+			loader.load('suporte1.json', function (g, m) {
+				var obj = new THREE.Mesh(g, m);
+				scene.add(obj);
+			});
+			loader.load('suporte2.json', function (g, m) {
+				var obj = new THREE.Mesh(g, m);
+				scene.add(obj);
+			});
+			loader.load('topo.json', function (g, m) {
+				var obj = new THREE.Mesh(g, m);
+				scene.add(obj);
+			});
+			loader.load('piso.json', function (g, m) {
+				var obj = new THREE.Mesh(g, m);
+				scene.add(obj);
+			});
+			
+			var pointLight = new THREE.PointLight(0xFFFFFF, 1.9, 0);
+			pointLight.position.x = 0.89;
+			pointLight.position.y = 6.46;
+			pointLight.position.z = 4.84;
+			scene.add(pointLight);
+			
+			var render = function() {
+				renderer.render(scene, camera);
+				requestAnimationFrame(render);
+				
+				if (aberta_g1) {
+					gaveta1.position.z += velocidade;
+				} else {
+					gaveta1.position.z -= velocidade;
+				}
+				if (gaveta1.position.z <= limite_fechada) {
+					gaveta1.position.z = limite_fechada;
+				}
+				if (gaveta1.position.z >= limite_aberta) {
+					gaveta1.position.z = limite_aberta;
+				}
+
+
+				if (aberta_g2) {
+					gaveta2.position.z += velocidade;
+				} else {
+					gaveta2.position.z -= velocidade;
+				}
+				if (gaveta2.position.z <= limite_fechada) {
+					gaveta2.position.z = limite_fechada;
+				}
+				if (gaveta2.position.z >= limite_aberta) {
+					gaveta2.position.z = limite_aberta;
+				}
+
+				if (aberta_g3) {
+					gaveta3.position.z += velocidade;
+				} else {
+					gaveta3.position.z -= velocidade;
+				}
+				if (gaveta3.position.z <= limite_fechada) {
+					gaveta3.position.z = limite_fechada;
+				}
+				if (gaveta3.position.z >= limite_aberta) {
+					gaveta3.position.z = limite_aberta;
+				}
+
+			};
+			
+			render();
+			
+			window.addEventListener('resize', function(){
+				WIDTH = window.innerWidth;
+				HEIGHT = window.innerHeight;
+				renderer.setSize(WIDTH, HEIGHT);
+				
+				camera.aspect = (WIDTH / HEIGHT);
+				camera.updateProjectionMatrix();
+			});
+		}
+		var gaveta1, gaveta2, gaveta3;
+		var aberta_g1 = false;
+		var aberta_g2 = false;
+		var aberta_g3 = false;
+		
+		var velocidade = 0.03;
+
+		var limite_aberta = 1.55;
+		var limite_fechada = 0;
+	</script>
+</body>
+</html>
